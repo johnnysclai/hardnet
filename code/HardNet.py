@@ -62,7 +62,7 @@ parser.add_argument('--w1bsroot', type=str,
                     default='data/sets/wxbs-descriptors-benchmark/code/',
                     help='path to dataset')
 parser.add_argument('--dataroot', type=str,
-                    default='data/sets/',
+                    default='../../../Datasets/Descriptor/PhotoTour/',
                     help='path to dataset')
 parser.add_argument('--enable-logging',type=str2bool, default=False,
                     help='output to tensorlogger')
@@ -327,7 +327,7 @@ class HardNet(nn.Module):
 
 def weights_init(m):
     if isinstance(m, nn.Conv2d):
-        nn.init.orthogonal(m.weight.data, gain=0.6)
+        nn.init.orthogonal_(m.weight.data, gain=0.6)
         try:
             nn.init.constant(m.bias.data, 0.01)
         except:
@@ -370,19 +370,19 @@ def create_loaders(load_random_triplets = False):
                              name=args.training_set,
                              download=True,
                              transform=transform_train),
-                             batch_size=args.batch_size,
-                             shuffle=False, **kwargs)
+        batch_size=args.batch_size,
+        shuffle=False, **kwargs)
 
     test_loaders = [{'name': name,
                      'dataloader': torch.utils.data.DataLoader(
              TripletPhotoTour(train=False,
-                     batch_size=args.test_batch_size,
-                     root=args.dataroot,
-                     name=name,
-                     download=True,
-                     transform=transform_test),
-                        batch_size=args.test_batch_size,
-                        shuffle=False, **kwargs)}
+                              batch_size=args.test_batch_size,
+                              root=args.dataroot,
+                              name=name,
+                              download=False,
+                              transform=transform_test),
+                         batch_size=args.test_batch_size,
+                         shuffle=False, **kwargs)}
                     for name in test_dataset_names]
 
     return train_loader, test_loaders
@@ -598,3 +598,4 @@ if __name__ == '__main__':
         #file_logger = FileLogger(./log/+suffix)
     train_loader, test_loaders = create_loaders(load_random_triplets = triplet_flag)
     main(train_loader, test_loaders, model, logger, file_logger)
+
